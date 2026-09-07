@@ -1,20 +1,47 @@
-ario	escenario	adversario	calendario	empresario	legendario	vecindario	comentario	intermediario	extraordinario	revolucionario
-ado	controlado	conectado	programado	condenado	camuflado	preparado	acelerado	consagrado	calculado	desatado
-ente	presente	decadente	contundente	transparente	permanente	independiente	sorprendente	inteligente	irreverente	incandescente
-mente	fríamente	mentalmente	visualmente	brutalmente	literalmente	musicalmente	verticalmente	digitalmente	originalmente	magistralmente
-cion	conexión	presión	visión	misión	ficción	precisión	decisión	ambición	combustión	explosión
-ista	artista	realista	futurista	especialista	alquimista	periodista	protagonista	perfeccionista	oportunista	coleccionista
-era	carretera	frontera	pantera	primavera	calavera	escalera	bandolera	cordillera	mensajera	verdadera
-oro	oro	tesoro	sonoro	decoro	coro	foro	meteoro	imploro	devoro	mejoro
-aje	viaje	mensaje	paisaje	blindaje	tatuaje	equipaje	sabotaje	montaje	homenaje	kilometraje
-uelo	vuelo	suelo	consuelo	abuelo	pañuelo	anzuelo	riachuelo	señuelo	subsuelo	revuelo
-ano	urbano	humano	villano	soberano	lejano	artesano	profano	temprano	gusano	verano
-ero	guerrero	viajero	pionero	joyero	banquero	arquero	marinero	mensajero	callejero	verdadero
-ia	energía	tecnología	melodía	geometría	filosofía	biografía	cirugía	astronomía	economía	poesía
-on	campeón	avión	tiburón	cinturón	callejón	corazón	batallón	escalón	guion	pabellón
-al	mental	digital	criminal	vertical	cultural	musical	ancestral	colosal	magistral	universal
-osa	peligrosa	poderosa	misteriosa	ambiciosa	victoriosa	silenciosa	furiosa	lujosa	gloriosa	nerviosa
-arte	arte	parte	Marte	descarte	estandarte	burlarte	quemarte	mirarte	retarte	marcarte
-ojo	ojo	rojo	antojo	despojo	cerrojo	manojo	flojo	cojo	recojo	remojo
-eza	cabeza	nobleza	pureza	riqueza	firmeza	destreza	belleza	certeza	tristeza	grandeza
-ido	sonido	latido	tejido	partido	perdido	encendido	prohibido	atrevido	comprometido	desconocido
+# clave<TAB>palabras de una misma familia fonética. Cada familia tiene >= 11 opciones.
+ario	escenario	adversario	calendario	empresario	legendario	vecindario	comentario	intermediario	extraordinario	revolucionario	visionario	millonario	planetario
+ado	controlado	conectado	programado	condenado	camuflado	preparado	acelerado	consagrado	calculado	desatado	afilado	coronado	blindado
+ido	sonido	latido	tejido	partido	perdido	encendido	prohibido	atrevido	comprometido	desconocido	dividido	sumergido	convertido
+ando	comandando	caminando	dominando	acelerando	calculando	improvisando	programando	controlando	conectando	avanzando	disparando	volando	brillando
+iendo	moviendo	rompiendo	corriendo	creciendo	viviendo	sintiendo	midiendo	batiendo	ardiendo	mordiendo	volviendo	perdiendo	subiendo
+ente	presente	decadente	contundente	transparente	permanente	independiente	sorprendente	inteligente	irreverente	incandescente	competente	resistente	diferente
+mente	fríamente	mentalmente	visualmente	brutalmente	literalmente	musicalmente	verticalmente	digitalmente	originalmente	magistralmente	finalmente	totalmente	naturalmente
+cion	conexión	presión	visión	misión	ficción	precisión	decisión	ambición	combustión	explosión	reacción	creación	operación	evolución
+sion	tensión	extensión	dimensión	comprensión	expresión	impresión	obsesión	posesión	profesión	sesión	versión	inmersión	suspensión	progresión
+ista	artista	realista	futurista	especialista	alquimista	periodista	protagonista	perfeccionista	oportunista	coleccionista	activista	analista	finalista
+ismo	realismo	cinismo	ritmo	mecanismo	organismo	turismo	capitalismo	magnetismo	fatalismo	simbolismo	minimalismo	pragmatismo	surrealismo
+ero	guerrero	viajero	pionero	joyero	banquero	arquero	marinero	mensajero	callejero	verdadero	caballero	prisionero	aventurero
+era	carretera	frontera	pantera	primavera	calavera	escalera	bandolera	cordillera	mensajera	verdadera	guerrera	viajera	compañera
+ano	urbano	humano	villano	soberano	lejano	artesano	profano	temprano	gusano	verano	romano	mundano	paisano
+ana	ventana	campana	semana	mañana	manzana	sabana	aduana	persiana	avellana	porcelana	artesana	urbana	hermana
+oso	peligroso	poderoso	misterioso	ambicioso	victorioso	silencioso	furioso	lujoso	glorioso	nervioso	valioso	curioso	majestuoso
+osa	peligrosa	poderosa	misteriosa	ambiciosa	victoriosa	silenciosa	furiosa	lujosa	gloriosa	nerviosa	valiosa	curiosa	majestuosa
+al	mental	digital	criminal	vertical	cultural	musical	ancestral	colosal	magistral	universal	brutal	central	fenomenal
+ar	controlar	acelerar	disparar	preparar	dominar	programar	conectar	calcular	improvisar	navegar	coronar	transformar	atacar
+er	poder	romper	vencer	morder	correr	crecer	volver	arder	mover	resolver	encender	aprender	entender
+ir	partir	subir	vivir	medir	combatir	decidir	convertir	competir	resistir	destruir	construir	invadir	seguir
+on	campeón	avión	tiburón	cinturón	callejón	corazón	batallón	escalón	guion	pabellón	cañón	millón	ciclón	dragón
+or	motor	valor	calor	temor	rumor	honor	dolor	controlador	creador	gladiador	depredador	narrador	conquistador
+ura	altura	locura	armadura	figura	textura	cultura	apertura	estructura	criatura	cobertura	fractura	aventura	literatura
+able	imparable	inevitable	innegable	respetable	formidable	impecable	improbable	admirable	memorable	indomable	incansable	intocable	estable
+ible	invencible	invisible	imposible	terrible	flexible	compatible	increíble	irreversible	impredecible	indestructible	sensible	combustible	accesible
+ivo	agresivo	decisivo	explosivo	creativo	competitivo	instintivo	definitivo	selectivo	intensivo	furtivo	combativo	impulsivo	masivo
+iva	agresiva	decisiva	explosiva	creativa	competitiva	instintiva	definitiva	selectiva	intensiva	furtiva	combativa	impulsiva	masiva
+eza	cabeza	nobleza	pureza	riqueza	firmeza	destreza	belleza	certeza	tristeza	grandeza	fortaleza	naturaleza	sutileza
+ia	energía	tecnología	melodía	geometría	filosofía	biografía	cirugía	astronomía	economía	poesía	fantasía	teoría	alegoría
+aje	viaje	paisaje	blindaje	montaje	camuflaje	lenguaje	personaje	homenaje	abordaje	equipaje	peaje	anclaje	aterrizaje
+uelo	vuelo	suelo	consuelo	abuelo	pañuelo	anzuelo	desvelo	modelo	paralelo	caramelo	revuelo	señuelo	subsuelo
+ojo	ojo	rojo	antojo	despojo	cerrojo	manojo	flojo	cojo	recojo	remojo	enojo	abrojo	trampantojo
+arte	arte	parte	Marte	descarte	estandarte	quemarte	mirarte	retarte	marcarte	atacarte	ganarte	borrarte	cortarte
+ola	ola	bola	cola	sola	caracola	góndola	amapola	vitrola	cacerola	farola	banderola	consola	pistola
+eta	meta	planeta	cometa	atleta	secreta	completa	concreta	profeta	maleta	camioneta	bicicleta	marioneta	bayoneta
+ato	gato	rato	plato	contrato	formato	aparato	barato	ato	campeonato	asesinato	mandato	relato	candidato
+ete	cohete	billete	juguete	paquete	banquete	jinete	gabinete	machete	casete	filete	carrete	sonete	boquete
+ote	bote	bro﻿te	lote	pote	azote	grandote	bigote	capote	rebote	garrote	coyote	monigote	ote
+ino	destino	camino	vecino	divino	cristalino	clandestino	asesino	peregrino	marino	latino	fino	adivino	argentino
+ina	esquina	rutina	vitamina	adrenalina	gasolina	disciplina	medicina	neblina	cabina	piscina	doctrina	cortina	vitrina
+eso	peso	beso	hueso	progreso	regreso	exceso	proceso	acceso	congreso	ingreso	receso	confeso	impreso
+az	capaz	tenaz	audaz	voraz	fugaz	veraz	mordaz	perspicaz	eficaz	locuaz	falaz	vivaz	rapaz
+oz	voz	veloz	feroz	atroz	precoz	arroz	altavoz	coz	semidiós	pos	adiós	dos	vos
+ual	visual	actual	virtual	casual	gradual	sexual	ritual	manual	puntual	individual	conceptual	intelectual	residual
+ial	digital	? 
