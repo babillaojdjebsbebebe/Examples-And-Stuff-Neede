@@ -25,11 +25,14 @@ public class MainActivity extends Activity {
 
     private String pendingAction;
     private TextView setupStatus;
+    private LocalEngineDiagnostics.Result engineStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        engineStatus = LocalEngineDiagnostics.run(this);
         setContentView(buildUi());
+        refreshSetupStatus();
     }
 
     private View buildUi() {
@@ -60,7 +63,26 @@ public class MainActivity extends Activity {
         setupStatus.setPadding(dp(12), dp(10), dp(12), dp(10));
         root.addView(setupStatus, matchWrap());
 
+        if (!engineStatus.ok) {
+            TextView engineError = new TextView(this);
+            engineError.setText("⚠ MOTOR LOCAL: " + engineStatus.message);
+            engineError.setTextColor(Color.rgb(255, 110, 110));
+            engineError.setTextSize(13);
+            root.addView(engineError, matchWrap());
+        } else {
+            TextView engineInfo = new TextView(this);
+            engineInfo.setText(
+                    "Motor local OK · " + engineStatus.bridges + " puentes · " +
+                    engineStatus.domains + " universos · " +
+                    engineStatus.rhymeFamilies + " familias fonéticas"
+            );
+            engineInfo.setTextColor(Color.rgb(120, 230, 165));
+            engineInfo.setTextSize(12);
+            root.addView(engineInfo, matchWrap());
+        }
+
         Button overlay = button("1 · ACTIVAR BURBUJA");
+        overlay.setEnabled(engineStatus.ok);
         overlay.setOnClickListener(v -> enableOverlay());
         root.addView(overlay, matchWrap());
 
@@ -69,6 +91,7 @@ public class MainActivity extends Activity {
         root.addView(compatibility, matchWrap());
 
         Button listen = button("👂 ESCUCHAR RIVAL");
+        listen.setEnabled(engineStatus.ok);
         listen.setOnClickListener(v -> sendServiceAction(OverlayService.ACTION_LISTEN));
         root.addView(listen, matchWrap());
 
@@ -119,7 +142,8 @@ public class MainActivity extends Activity {
     }
 
     private void requestNotificationPermissionIfNeeded() {
-        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 33 &&
+                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIFICATIONS);
         }
     }
@@ -127,8 +151,10 @@ public class MainActivity extends Activity {
     private void enableOverlay() {
         pendingAction = START_OVERLAY;
         if (!Settings.canDrawOverlays(this)) {
-            Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
+            Intent i = new Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName())
+            );
             startActivity(i);
             return;
         }
@@ -140,21 +166,32 @@ public class MainActivity extends Activity {
     }
 
     private void startOverlayService() {
-        if (!hasAudioPermission() || !Settings.canDrawOverlays(this)) return;
+        if (!engineStatus.ok || !hasAudioPermission() || !Settings.canDrawOverlays(this)) return;
         requestNotificationPermissionIfNeeded();
         Intent i = new Intent(this, OverlayService.class);
         try {
             if (Build.VERSION.SDK_INT >= 26) startForegroundService(i); else startService(i);
         } catch (RuntimeException e) {
-            Toast.makeText(this, "No se pudo iniciar la burbuja. Abre Cypher Brain e inténtalo de nuevo.", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    "No se pudo iniciar la burbuja. Abre Cypher Brain e inténtalo de nuevo.",
+                    Toast.LENGTH_LONG
+            ).show();
         }
     }
 
     private void sendServiceAction(String action) {
+        if (!engineStatus.ok && OverlayService.ACTION_LISTEN.equals(action)) {
+            Toast.makeText(this, "El motor local no superó el autodiagnóstico.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         pendingAction = action;
         if (!Settings.canDrawOverlays(this)) {
-            Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
+            Intent i = new Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName())
+            );
             startActivity(i);
             return;
         }
@@ -187,7 +224,10 @@ public class MainActivity extends Activity {
     }
 
     private boolean isCompatibilityServiceEnabled() {
-        String enabled = Settings.Secure.getString(getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+        String enabled = Settings.Secure.getString(
+                getContentResolver(),
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        );
         if (TextUtils.isEmpty(enabled)) return false;
 
         ComponentName target = new ComponentName(this, AudioCompatibilityAccessibilityService.class);
@@ -205,12 +245,18 @@ public class MainActivity extends Activity {
         boolean overlay = Settings.canDrawOverlays(this);
         boolean mic = hasAudioPermission();
         boolean compat = isCompatibilityServiceEnabled();
+
         setupStatus.setText(
+                (engineStatus.ok ? "✓" : "✕") + " Motor   " +
                 (overlay ? "✓" : "○") + " Burbuja   " +
                 (mic ? "✓" : "○") + " Micrófono   " +
-                (compat ? "✓" : "○") + " Compatibilidad Discord"
+                (compat ? "✓" : "○") + " Discord"
         );
-        setupStatus.setTextColor(overlay && mic ? Color.rgb(120, 230, 165) : Color.rgb(235, 190, 90));
+        setupStatus.setTextColor(
+                engineStatus.ok && overlay && mic
+                        ? Color.rgb(120, 230, 165)
+                        : Color.rgb(235, 190, 90)
+        );
     }
 
     @Override
@@ -221,7 +267,11 @@ public class MainActivity extends Activity {
                 continuePendingAction();
             } else {
                 pendingAction = null;
-                Toast.makeText(this, "El modo ESCUCHAR necesita permiso de micrófono.", Toast.LENGTH_LONG).show();
+                Toast.makeText(
+                        this,
+                        "El modo ESCUCHAR necesita permiso de micrófono.",
+                        Toast.LENGTH_LONG
+                ).show();
             }
             refreshSetupStatus();
         }
