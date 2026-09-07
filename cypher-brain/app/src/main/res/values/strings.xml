@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="audio_compatibility_description">Compatibilidad de audio para prácticas de freestyle. No lee texto de pantalla, no ejecuta gestos y no guarda contenido de accesibilidad.</string>
+</resources>
