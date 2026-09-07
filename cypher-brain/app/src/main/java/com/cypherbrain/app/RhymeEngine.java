@@ -16,20 +16,26 @@ import java.util.Map;
 /**
  * Fast, deterministic rhyme engine for the live overlay.
  *
- * Important design rule: a pack NEVER mixes unrelated families. Once a
- * family is selected, all ten suggestions come from that same family so the
- * rapper can chain several bars without the rhyme texture changing randomly.
+ * A pack never mixes unrelated families. Once a family is selected, all ten
+ * suggestions come from that same family so several bars can be chained with
+ * one coherent rhyme texture.
  */
 public final class RhymeEngine {
     private final Map<String, List<String>> families = new LinkedHashMap<>();
 
     public RhymeEngine(Context context) {
-        load(context);
+        loadFile(context, "rhyme_families.tsv");
+        // Loaded second on purpose: specialized families can replace a generic
+        // family with the same key without changing the Java code.
+        loadFile(context, "rhyme_extra.tsv");
+        if (families.isEmpty()) {
+            throw new IllegalStateException("Corpus fonético vacío");
+        }
     }
 
-    private void load(Context context) {
+    private void loadFile(Context context, String assetName) {
         try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(context.getAssets().open("rhyme_families.tsv")))) {
+                new InputStreamReader(context.getAssets().open(assetName)))) {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
@@ -52,7 +58,7 @@ public final class RhymeEngine {
                 }
             }
         } catch (Exception e) {
-            throw new IllegalStateException("No se pudo cargar rhyme_families.tsv", e);
+            throw new IllegalStateException("No se pudo cargar " + assetName, e);
         }
     }
 
@@ -83,8 +89,7 @@ public final class RhymeEngine {
             }
         }
 
-        // Families are deliberately >= 11 entries, but keep a deterministic
-        // same-family fallback in case the data is edited later.
+        // Deterministic same-family fallback if the corpus is edited later.
         for (String candidate : family) {
             if (!out.contains(candidate)) {
                 out.add(candidate);
@@ -102,10 +107,7 @@ public final class RhymeEngine {
         return key == null ? "—" : key;
     }
 
-    /**
-     * Compact vowel-chain hint. It is not displayed as academic IPA; it is a
-     * rapid visual memory cue for freestyle.
-     */
+    /** Compact vowel-chain cue, optimized for fast reading rather than IPA. */
     public String phonemePattern(String phrase) {
         String word = norm(lastWord(phrase));
         if (word.isEmpty()) return "—";
@@ -113,8 +115,6 @@ public final class RhymeEngine {
         String vowels = vowelSequence(word);
         if (vowels.isEmpty()) return word;
 
-        // The last four vowel nuclei are enough to show a multisyllabic tail
-        // without making the floating UI noisy.
         int start = Math.max(0, vowels.length() - 4);
         String tail = vowels.substring(start);
         StringBuilder out = new StringBuilder();
@@ -155,9 +155,8 @@ public final class RhymeEngine {
         String keyVowels = vowelSequence(key);
         score += commonSuffix(targetVowels, keyVowels) * 140;
 
-        // Compare against representative actual words as well. This catches
-        // equivalent Spanish spellings such as -ción/-sión whose sound tail is
-        // close even when letters differ.
+        // Representative words catch equivalent Spanish spellings and richer
+        // multisyllabic tails even when the family key itself is short.
         int representativeBest = Integer.MIN_VALUE;
         int checked = 0;
         for (String candidate : family) {
@@ -166,7 +165,7 @@ public final class RhymeEngine {
             s += commonSuffix(targetVowels, vowelSequence(n)) * 95;
             s -= Math.abs(syllableApprox(target) - syllableApprox(n)) * 18;
             representativeBest = Math.max(representativeBest, s);
-            if (++checked >= 6) break;
+            if (++checked >= 8) break;
         }
         if (representativeBest != Integer.MIN_VALUE) score += representativeBest;
 
@@ -186,15 +185,11 @@ public final class RhymeEngine {
 
     private String vowelSequence(String s) {
         StringBuilder out = new StringBuilder();
-        boolean previousWasSameVowel = false;
         char previous = 0;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (isVowel(c)) {
-                // Collapse only identical adjacent vowels; keep diphthong
-                // information such as ia/ue/ai.
-                previousWasSameVowel = c == previous;
-                if (!previousWasSameVowel) out.append(c);
+                if (c != previous) out.append(c);
                 previous = c;
             } else {
                 previous = 0;
