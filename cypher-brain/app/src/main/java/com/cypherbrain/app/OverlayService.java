@@ -31,7 +31,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class OverlayService extends Service implements RecognitionListener {
     public static final String ACTION_LISTEN = "com.cypherbrain.app.LISTEN";
@@ -47,6 +46,7 @@ public class OverlayService extends Service implements RecognitionListener {
     private TextView status;
     private TextView transcript;
     private TextView output;
+    private Button complexityButton;
     private SpeechRecognizer recognizer;
     private Intent recognizerIntent;
     private BridgeRepository bridges;
@@ -54,6 +54,7 @@ public class OverlayService extends Service implements RecognitionListener {
     private boolean listening = false;
     private boolean recognitionRunning = false;
     private String lastRendered = "";
+    private int complexity = 2;
 
     @Override
     public void onCreate() {
@@ -115,7 +116,7 @@ public class OverlayService extends Service implements RecognitionListener {
         panel.setPadding(dp(12), dp(10), dp(12), dp(12));
         panel.setBackground(round(Color.argb(245, 15, 15, 18), 22));
         panel.setVisibility(View.GONE);
-        overlay.addView(panel, new LinearLayout.LayoutParams(dp(330), dp(430)));
+        overlay.addView(panel, new LinearLayout.LayoutParams(dp(340), dp(470)));
 
         status = text("● LISTO", 13, Color.LTGRAY);
         panel.addView(status);
@@ -128,6 +129,10 @@ public class OverlayService extends Service implements RecognitionListener {
         output = text("Grafo local: " + bridges.potentialConnections() + " conexiones posibles.", 14, Color.rgb(225, 225, 230));
         scroll.addView(output);
         panel.addView(scroll, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        complexityButton = smallButton("COMPLEJIDAD · " + complexityName());
+        complexityButton.setOnClickListener(v -> cycleComplexity());
+        panel.addView(complexityButton, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(44)));
 
         LinearLayout controls = new LinearLayout(this);
         controls.setOrientation(LinearLayout.HORIZONTAL);
@@ -152,6 +157,20 @@ public class OverlayService extends Service implements RecognitionListener {
         params.y = dp(180);
         addDrag(bubble, params);
         windowManager.addView(overlay, params);
+    }
+
+    private void cycleComplexity() {
+        complexity = complexity == 3 ? 1 : complexity + 1;
+        if (complexityButton != null) complexityButton.setText("COMPLEJIDAD · " + complexityName());
+        String current = lastRendered;
+        lastRendered = "";
+        if (current != null && !current.isEmpty()) renderPhrase(current);
+    }
+
+    private String complexityName() {
+        if (complexity == 1) return "DIRECTO";
+        if (complexity == 3) return "NICHO";
+        return "COMPLEJO";
     }
 
     private void addDrag(View handle, WindowManager.LayoutParams params) {
@@ -238,11 +257,11 @@ public class OverlayService extends Service implements RecognitionListener {
         String concept = bridges.bestConceptFromPhrase(clean);
         List<String> pack = rhymes.rhymePack(clean, 10);
         List<String> assoc = bridges.directAssociations(concept, 6);
-        List<String> routes = bridges.bridgesFor(concept, 6);
+        List<String> routes = bridges.bridgesFor(concept, 6, complexity);
 
         transcript.setText("“" + clean + "”\nFOCO: " + concept + "  ·  FONEMA: /" + rhymes.phonemePattern(clean) + "/");
         StringBuilder s = new StringBuilder();
-        s.append("\nMULTIS ×10\n");
+        s.append("COMPLEJIDAD: ").append(complexityName()).append("\n\nMULTIS ×10\n");
         for (int i = 0; i < pack.size(); i++) {
             if (i > 0) s.append(" · ");
             s.append(pack.get(i));
