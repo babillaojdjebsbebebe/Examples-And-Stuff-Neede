@@ -1,0 +1,26 @@
+# 25 familias x 22 conceptos = 11,550 relaciones dirigidas potenciales
+motos	moto	Ducati	Yamaha	Honda	Kawasaki	Suzuki	KTM	BMW Motorrad	Harley-Davidson	Aprilia	Triumph	MotoGP	Valentino Rossi	Marc Marquez	velocidad	curva	circuito	casco	escape	cilindrada	superbike	Italia
+autos_f1	auto	Ferrari	Lamborghini	Porsche	McLaren	Mercedes	Red Bull	Formula 1	Ayrton Senna	Michael Schumacher	Lewis Hamilton	Max Verstappen	Monaco	Monza	velocidad	pole position	pit stop	V12	turbo	aerodinamica	cavallino	Maranello
+lujo	lujo	Rolex	Cartier	Patek Philippe	Richard Mille	Audemars Piguet	Louis Vuitton	Gucci	Prada	Dior	Chanel	Hermes	Ferrari	Rolls-Royce	Phantom	diamante	oro	champagne	Monaco	yate	penthouse	Dubai
+hiphop	rap	hip-hop	Wu-Tang	Nas	Jay-Z	Biggie	Tupac	MF DOOM	Roc Marciano	Westside Gunn	Griselda	Mobb Deep	Rakim	Kendrick Lamar	boom bap	sample	vinilo	punchline	cypher	Bronx	Queensbridge	Staten Island
+horror	horror	Ghostface	Scream	Freddy Krueger	Jason Voorhees	Michael Myers	Chucky	Pennywise	Leatherface	The Shining	Overlook	Kubrick	hacha	mascara	pesadilla	sangre	slasher	Halloween	Elm Street	It	Stephen King	cine
+cine	cine	Kubrick	Scorsese	Tarantino	Coppola	Spielberg	Nolan	Hitchcock	De Palma	Fincher	Goodfellas	Pulp Fiction	Godfather	Inception	Vertigo	Taxi Driver	Oscar	Cannes	guion	camara	director	Hollywood
+anime	anime	Dragon Ball	Goku	Vegeta	Naruto	Sasuke	One Piece	Luffy	Zoro	Bleach	Ichigo	Death Note	Light Yagami	Ryuk	Attack on Titan	Eren	Akira	Evangelion	mecha	manga	shonen	Japon
+gaming	videojuegos	Nintendo	PlayStation	Xbox	Sega	Mario	Sonic	Zelda	Link	Halo	Master Chief	GTA	Rockstar	Fortnite	Minecraft	Tetris	Street Fighter	Ryu	Mortal Kombat	Scorpion	speedrun	arcade
+basketball	basket	NBA	Michael Jordan	LeBron James	Kobe Bryant	Shaq	Curry	Magic Johnson	Larry Bird	Bulls	Lakers	Celtics	Warriors	triple	dunk	anillo	MVP	Madison Square Garden	Chicago	Los Angeles	23	cancha
+football	futbol	Messi	Cristiano Ronaldo	Maradona	Pele	Zidane	Ronaldinho	Neymar	Mbappe	Barcelona	Real Madrid	Boca Juniors	Champions League	Mundial	Balon de Oro	gol	penalti	estadio	Camp Nou	Bernabeu	Argentina	Brasil
+boxing	boxeo	Muhammad Ali	Mike Tyson	Floyd Mayweather	Manny Pacquiao	Canelo	Sugar Ray Robinson	knockout	jab	uppercut	gancho	ring	guantes	peso pesado	Las Vegas	MGM Grand	campeon	cinturon	nocaut	esquina	campana	velocidad
+greek	mitologia	Zeus	Hades	Poseidon	Atenea	Ares	Hermes	Apolo	Artemisa	Afrodita	Hercules	Aquiles	Medusa	Minotauro	Olimpo	Tartaro	titan	Cronos	oraculo	Troya	Esparta	Grecia
+norse	nordico	Odin	Thor	Loki	Freyja	Heimdall	Tyr	Baldur	Valhalla	Ragnarok	Yggdrasil	Mjolnir	Asgard	Jotunheim	runas	vikingo	drakkar	cuervo	Fenrir	Jormungandr	hielo	trueno
+space_science	espacio	NASA	SpaceX	astronauta	Apollo 11	Luna	Marte	Saturno	Jupiter	agujero negro	galaxia	telescopio	Hubble	Webb	gravedad	Einstein	Newton	relatividad	orbita	cohete	estrella	cosmos
+technology	tecnologia	Apple	iPhone	Steve Jobs	Microsoft	Bill Gates	Google	Android	Samsung	Nvidia	GPU	inteligencia artificial	OpenAI	robot	algoritmo	codigo	hacker	servidor	nube	chip	Silicon Valley	internet
+internet	internet	meme	viral	TikTok	YouTube	Twitch	Discord	Reddit	X	Instagram	streamer	influencer	algoritmo	tendencia	hashtag	timeline	DM	servidor	avatar	emoji	shitpost	navegador
+money	dinero	dolar	Wall Street	bolsa	acciones	Bitcoin	cripto	banco	tarjeta	efectivo	millonario	Forbes	negocio	inversion	capital	interes	deuda	oro	mercado	Nasdaq	trader	riqueza
+fashion	moda	Gucci	Prada	Louis Vuitton	Dior	Chanel	Balenciaga	Versace	Off-White	Supreme	Nike	Jordan	Yeezy	runway	pasarela	Paris	Milan	diseñador	alta costura	sneaker	seda	logo
+art	arte	Basquiat	Warhol	Picasso	Dali	Banksy	Van Gogh	Monet	Rembrandt	Louvre	MoMA	SAMO	graffiti	lienzo	subasta	Sothebys	pincel	surrealismo	cubismo	pop art	museo	corona
+literature	literatura	Shakespeare	Cervantes	Borges	Kafka	Dostoevsky	Orwell	Dante	Homer	Poe	Quijote	1984	Metamorfosis	Infierno	Odisea	poema	novela	biblioteca	tinta	pluma	autor	clasico
+history	historia	Roma	Cesar	Napoleon	Cleopatra	Genghis Khan	Alejandro Magno	Esparta	samurai	shogun	revolucion	imperio	Waterloo	Egipto	faraon	piramide	gladiador	coliseo	imperio romano	conquista	corona	batalla
+travel_geo	viaje	Panama	New York	Tokyo	Paris	Dubai	Roma	Londres	Mexico	Colombia	Caribe	Pacifico	Atlantico	aeropuerto	pasaporte	hotel	mapa	frontera	isla	montaña	ciudad	mundo
+food	comida	sushi	pizza	pasta	ramen	taco	ceviche	caviar	trufa	wagyu	Michelin	chef	cocina	fuego	cuchillo	sal	dulce	cafe	chocolate	vino	champagne	restaurante
+nature_animals	naturaleza	leon	tigre	lobo	aguila	serpiente	tiburon	pantera	cuervo	halcon	dragon	selva	oceano	volcan	tormenta	rayo	fuego	hielo	luna	sol	depredador	veneno
+street_city	calle	barrio	esquina	metro	graffiti	Bronx	Queens	Brooklyn	Harlem	Tokyo	neon	rooftop	bloque	cemento	asfalto	sirena	patrulla	skyline	noche	humo	semaforo	avenida
