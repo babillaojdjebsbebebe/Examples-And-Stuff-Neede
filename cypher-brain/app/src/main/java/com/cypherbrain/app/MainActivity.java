@@ -18,12 +18,13 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
     private static final int REQ_AUDIO = 1001;
     private static final int REQ_NOTIFICATIONS = 1002;
+    private String pendingAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(buildUi());
-        requestRuntimePermissions();
+        requestNotificationPermissionIfNeeded();
     }
 
     private View buildUi() {
@@ -84,10 +85,20 @@ public class MainActivity extends Activity {
         return b;
     }
 
-    private void requestRuntimePermissions() {
-        if (Build.VERSION.SDK_INT >= 23 && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQ_AUDIO);
+    private boolean hasAudioPermission() {
+        return Build.VERSION.SDK_INT < 23 || checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestAudioPermission(String actionAfterGrant) {
+        pendingAction = actionAfterGrant;
+        if (hasAudioPermission()) {
+            continuePendingAction();
+            return;
         }
+        requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQ_AUDIO);
+    }
+
+    private void requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIFICATIONS);
         }
@@ -100,29 +111,60 @@ public class MainActivity extends Activity {
             startActivity(i);
             return;
         }
-        startOverlayService();
+        requestAudioPermission("START_OVERLAY");
     }
 
     private void startOverlayService() {
+        if (!hasAudioPermission() || !Settings.canDrawOverlays(this)) return;
         Intent i = new Intent(this, OverlayService.class);
         if (Build.VERSION.SDK_INT >= 26) startForegroundService(i); else startService(i);
     }
 
     private void sendServiceAction(String action) {
         if (!Settings.canDrawOverlays(this)) {
-            enableOverlay();
+            pendingAction = action;
+            Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(i);
             return;
         }
+        if (!hasAudioPermission()) {
+            requestAudioPermission(action);
+            return;
+        }
+        dispatchServiceAction(action);
+    }
+
+    private void dispatchServiceAction(String action) {
         Intent i = new Intent(this, OverlayService.class);
         i.setAction(action);
         if (Build.VERSION.SDK_INT >= 26) startForegroundService(i); else startService(i);
     }
 
+    private void continuePendingAction() {
+        String action = pendingAction;
+        pendingAction = null;
+        if (action == null || "START_OVERLAY".equals(action)) {
+            startOverlayService();
+        } else {
+            dispatchServiceAction(action);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_AUDIO && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            continuePendingAction();
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        if (Settings.canDrawOverlays(this) && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            startOverlayService();
+        if (Settings.canDrawOverlays(this)) {
+            if (pendingAction != null && hasAudioPermission()) continuePendingAction();
+            else if (hasAudioPermission()) startOverlayService();
         }
     }
 }
