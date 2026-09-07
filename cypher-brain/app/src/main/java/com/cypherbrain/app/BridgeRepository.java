@@ -16,9 +16,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-public class BridgeRepository {
+public final class BridgeRepository {
     private final List<Cluster> clusters = new ArrayList<>();
     private final Map<String, List<Cluster>> reverse = new HashMap<>();
+    private final Map<String, String> aliases = new HashMap<>();
     private final Set<String> stop = new HashSet<>();
 
     public BridgeRepository(Context context) {
@@ -27,12 +28,13 @@ public class BridgeRepository {
                 "a", "y", "o", "que", "en", "con", "por", "para", "mi", "mis", "me", "te",
                 "se", "es", "soy", "eres", "somos", "son", "como", "pero", "si", "no", "ya",
                 "lo", "le", "al", "este", "esta", "eso", "esa", "aqui", "aquí", "ahi", "ahí",
-                "muy", "mas", "más", "esto", "ese", "esa", "unos", "unas", "porque"
+                "muy", "mas", "más", "esto", "ese", "unos", "unas", "porque"
         );
-        load(context);
+        loadGraph(context);
+        loadAliases(context);
     }
 
-    private void load(Context context) {
+    private void loadGraph(Context context) {
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(context.getAssets().open("clusters.tsv")))) {
             String line;
@@ -74,10 +76,30 @@ public class BridgeRepository {
         }
     }
 
-    /**
-     * Number of ordered semantic bridges available inside the domains.
-     * Each ordered pair A/B is connected through one shared semantic root.
-     */
+    private void loadAliases(Context context) {
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(context.getAssets().open("aliases.tsv")))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) continue;
+
+                String[] p = line.split("\\t");
+                if (p.length < 2) continue;
+
+                String alias = norm(p[0]);
+                String requestedCanonical = p[1].trim();
+                String canonical = canonicalFor(norm(requestedCanonical));
+                if (!alias.isEmpty() && canonical != null) {
+                    aliases.put(alias, canonical);
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("No se pudo cargar aliases.tsv", e);
+        }
+    }
+
+    /** Ordered semantic bridges available inside the typed domains. */
     public int potentialConnections() {
         int n = 0;
         for (Cluster c : clusters) {
@@ -88,6 +110,10 @@ public class BridgeRepository {
 
     public int domainCount() {
         return clusters.size();
+    }
+
+    public int aliasCount() {
+        return aliases.size();
     }
 
     public List<String> allNodes() {
@@ -101,19 +127,36 @@ public class BridgeRepository {
     public String bestConceptFromPhrase(String phrase) {
         if (phrase == null || phrase.trim().isEmpty()) return "";
 
-        String cleaned = norm(phrase).replaceAll("[^a-z0-9ñ ]", " ");
-        String[] tokens = cleaned.trim().split("\\s+");
+        String cleaned = norm(phrase).replaceAll("[^a-z0-9ñ ]", " ").replaceAll("\\s+", " ").trim();
+        if (cleaned.isEmpty()) return "";
+        String[] tokens = cleaned.split(" ");
 
-        // Prefer exact graph concepts, scanning backwards because the last
-        // useful noun/reference in a freestyle phrase is often the punch anchor.
-        for (int i = tokens.length - 1; i >= 0; i--) {
-            String t = tokens[i];
-            if (t.length() < 3 || stop.contains(t)) continue;
-            String exact = canonicalFor(t);
-            if (exact != null) return exact;
+        // Multiword references first: "red social", "inteligencia artificial",
+        // "Michael Schumacher", etc. Prefer the latest phrase fragment.
+        for (int span = Math.min(4, tokens.length); span >= 2; span--) {
+            for (int start = tokens.length - span; start >= 0; start--) {
+                String candidate = join(tokens, start, span);
+                String exact = canonicalFor(candidate);
+                if (exact != null) return exact;
+                String aliased = aliases.get(candidate);
+                if (aliased != null) return aliased;
+            }
         }
 
-        // Handle short fragments/plurals that contain a known concept.
+        // Single words, scanning backwards because the latest useful noun or
+        // reference is commonly the punch anchor in freestyle.
+        for (int i = tokens.length - 1; i >= 0; i--) {
+            String t = tokens[i];
+            if (t.length() < 2 || stop.contains(t)) continue;
+
+            String exact = canonicalFor(t);
+            if (exact != null) return exact;
+
+            String aliased = aliases.get(t);
+            if (aliased != null) return aliased;
+        }
+
+        // Conservative fuzzy match for plural/short morphological variants.
         String best = null;
         int bestScore = Integer.MAX_VALUE;
         for (int i = tokens.length - 1; i >= 0; i--) {
@@ -121,10 +164,11 @@ public class BridgeRepository {
             if (t.length() < 4 || stop.contains(t)) continue;
             for (String key : reverse.keySet()) {
                 if (key.length() < 4) continue;
-                if (key.contains(t) || t.contains(key)) {
-                    int score = Math.abs(key.length() - t.length());
-                    if (score < bestScore) {
-                        bestScore = score;
+                int lengthDelta = Math.abs(key.length() - t.length());
+                if (lengthDelta > 3) continue;
+                if (key.startsWith(t) || t.startsWith(key) || key.endsWith(t) || t.endsWith(key)) {
+                    if (lengthDelta < bestScore) {
+                        bestScore = lengthDelta;
                         best = canonicalFor(key);
                     }
                 }
@@ -132,11 +176,21 @@ public class BridgeRepository {
         }
         if (best != null) return best;
 
-        // If the word is not in the knowledge graph, keep it as a free concept.
+        // Unknown words remain visible as free concepts rather than being
+        // silently mapped to an unrelated universe.
         for (int i = tokens.length - 1; i >= 0; i--) {
             if (tokens[i].length() >= 3 && !stop.contains(tokens[i])) return tokens[i];
         }
-        return tokens.length == 0 ? "" : tokens[tokens.length - 1];
+        return tokens[tokens.length - 1];
+    }
+
+    private String join(String[] tokens, int start, int length) {
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            if (i > 0) out.append(' ');
+            out.append(tokens[start + i]);
+        }
+        return out.toString();
     }
 
     private String canonicalFor(String normalized) {
@@ -191,8 +245,7 @@ public class BridgeRepository {
                     continue;
                 }
 
-                // NICHO: if the first concept also belongs to another universe,
-                // jump domains (Ferrari: auto→lujo, Kubrick: horror→cine, etc.).
+                // NICHO: jump across universes when a shared node exists.
                 Cluster cross = differentClusterFor(first.value, c);
                 if (cross != null) {
                     int crossIndex = indexOf(cross, norm(first.value));
@@ -239,8 +292,6 @@ public class BridgeRepository {
             int idx = indexOf(c, key);
             if (idx < 0) idx = 0;
 
-            // When the detected concept is a member rather than the root,
-            // make the semantic universe visible immediately.
             if (idx != 0 && out.size() < limit) {
                 out.add("UNIVERSO · " + c.root);
             }
@@ -268,7 +319,7 @@ public class BridgeRepository {
     }
 
     private String displayTyped(Node node) {
-        return typed(node).replace(':', '·');
+        return typed(node).replace(": ", " · ");
     }
 
     private Node pickDifferentRelation(Cluster c, int from, String avoidRelation, int offset) {
@@ -303,8 +354,9 @@ public class BridgeRepository {
             int score = 999;
             for (Node node : c.nodes) {
                 String nn = norm(node.value);
-                if (nn.contains(key) || key.contains(nn)) {
-                    score = Math.min(score, Math.abs(nn.length() - key.length()));
+                int delta = Math.abs(nn.length() - key.length());
+                if (delta <= 3 && (nn.startsWith(key) || key.startsWith(nn) || nn.endsWith(key) || key.endsWith(nn))) {
+                    score = Math.min(score, delta);
                 }
             }
             if (score < 999) scored.add(new ScoredCluster(c, score));
