@@ -104,12 +104,15 @@ public class BridgeRepository {
     }
 
     public List<String> bridgesFor(String concept, int limit) {
+        return bridgesFor(concept, limit, 2);
+    }
+
+    public List<String> bridgesFor(String concept, int limit, int complexity) {
         if (concept == null || concept.isEmpty()) return Collections.emptyList();
+        complexity = Math.max(1, Math.min(3, complexity));
         String key = norm(concept);
         List<Cluster> source = reverse.get(key);
-        if (source == null || source.isEmpty()) {
-            source = nearestClusters(key);
-        }
+        if (source == null || source.isEmpty()) source = nearestClusters(key);
         if (source.isEmpty()) return Collections.emptyList();
 
         LinkedHashSet<String> results = new LinkedHashSet<>();
@@ -117,16 +120,38 @@ public class BridgeRepository {
             int idx = indexOf(c, key);
             if (idx < 0) idx = 0;
             int n = c.nodes.size();
+            int stride = complexity == 1 ? 1 : (complexity == 2 ? 2 : 4);
+
             for (int jump = 1; jump < n && results.size() < limit; jump++) {
-                String a = c.nodes.get((idx + jump) % n);
-                String b = c.nodes.get((idx + jump + 1) % n);
-                String d = c.nodes.get((idx + jump + 2) % n);
+                String a = c.nodes.get((idx + jump * stride) % n);
                 if (norm(a).equals(key)) continue;
+
+                if (complexity == 3) {
+                    Cluster cross = differentClusterFor(a, c);
+                    if (cross != null) {
+                        int x = indexOf(cross, norm(a));
+                        int m = cross.nodes.size();
+                        String b = cross.nodes.get((x + 3) % m);
+                        String d = cross.nodes.get((x + 7) % m);
+                        results.add(concept + " → " + a + " ⇢ " + b + " → " + d);
+                        continue;
+                    }
+                }
+
+                String b = c.nodes.get((idx + jump * stride + stride) % n);
+                String d = c.nodes.get((idx + jump * stride + stride * 2) % n);
                 results.add(concept + " → " + a + " → " + b + " → " + d);
             }
             if (results.size() >= limit) break;
         }
         return new ArrayList<>(results);
+    }
+
+    private Cluster differentClusterFor(String node, Cluster current) {
+        List<Cluster> cs = reverse.get(norm(node));
+        if (cs == null) return null;
+        for (Cluster c : cs) if (c != current) return c;
+        return null;
     }
 
     public List<String> directAssociations(String concept, int limit) {
